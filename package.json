@@ -1,0 +1,44 @@
+{
+  "name": "jobs-ejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inversesquarelaw/jobs-ejs.git"
+  },
+  "author": "Lawrence L",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/inversesquarelaw/jobs-ejs/issues"
+  },
+  "homepage": "https://github.com/inversesquarelaw/jobs-ejs#readme",
+  "dependencies": {
+    "": "*",
+    "connect-flash": "*",
+    "connect-mongodb-session": "*",
+    "cookie-parser": "*",
+    "dotenv": "*",
+    "ejs": "*",
+    "express": "*",
+    "express-async-errors": "*",
+    "express-rate-limit": "*",
+    "express-session": "*",
+    "helmet": "*",
+    "host-csrf": "*",
+    "jobs-ejs": "file:",
+    "mongoose": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "xss-clean": "*"
+  },
+  "devDependencies": {
+    "eslint": "*",
+    "nodemon": "^2.0.9",
+    "pretier": "*"
+  }
+}
