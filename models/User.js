@@ -6,8 +6,8 @@ const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide your name"],
-    minlength: 3,
     maxlength: 50,
+    minlength: 3,
   },
   email: {
     type: String,
@@ -25,24 +25,13 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function () {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
+
 });
 
 UserSchema.methods.createJWT = function () {
-  /*
-  //there is a bug in this code, when I paste the final version it returns the token as expected
-  return jwt.sign(
-    { userId: this._id, name: this.name }, 
-    "jwtSecret", 
-    {
-      expriresIn: "30d",
-    //   ^ typo here is the bug
-    }
-  );
-  */
   return jwt.sign(
     { userId: this._id, name: this.name },
     process.env.JWT_SECRET,

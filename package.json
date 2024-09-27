@@ -4,41 +4,33 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "dev": "nodemon app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/inversesquarelaw/jobs-ejs.git"
-  },
-  "author": "Lawrence L",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/inversesquarelaw/jobs-ejs/issues"
-  },
-  "homepage": "https://github.com/inversesquarelaw/jobs-ejs#readme",
   "dependencies": {
-    "": "*",
-    "connect-flash": "*",
-    "connect-mongodb-session": "*",
-    "cookie-parser": "*",
-    "dotenv": "*",
-    "ejs": "*",
-    "express": "*",
-    "express-async-errors": "*",
-    "express-rate-limit": "*",
-    "express-session": "*",
-    "helmet": "*",
-    "host-csrf": "*",
-    "jobs-ejs": "file:",
-    "mongoose": "*",
-    "passport": "*",
-    "passport-local": "*",
-    "xss-clean": "*"
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^5.0.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "host-csrf": "^1.0.2",
+    "mongoose": "^8.6.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "eslint": "*",
-    "nodemon": "^2.0.9",
-    "pretier": "*"
+    "eslint": "^9.10.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3"
   }
 }
