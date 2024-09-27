@@ -94,6 +94,7 @@ app.post("/secretWord", (req, res) => {
   secretWord = req.body.secretWord;
   res.redirect("/secretWord");
 });
+
 */
 
 app.use((req, res) => {
