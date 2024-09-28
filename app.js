@@ -54,16 +54,36 @@ if (app.get("env") === "production") {
 
 app.use(session(sessionParms));
 
+const passport = require("passport");
+const passportInit = require("./passport/passportInit");
+
+passportInit();
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(require("connect-flash")());
 
 app.use(require("./middleware/storeLocals"));
 app.get("/", (req, res) => {
   res.render("index");
 });
+
 app.use("/sessions", require("./routes/sessionRoutes"));
+
+// without using auth middleware, used to check that the secret word is working
+/*
+const secretWordRouter = require("./routes/secretWord");
+app.use("/secretWord", secretWordRouter);
+*/
+
+// turn on authentication middleware for this route
+const secretWordRouter = require("./routes/secretWord");
+const auth = require("./middleware/auth");
+app.use("/secretWord", auth, secretWordRouter);
 
 // secret word handling
 // let secretWord = "syzygy";
+/*
 app.get("/secretWord", (req, res) => {
   if (!req.session.secretWord) {
     req.session.secretWord = "syzygy";
@@ -82,6 +102,7 @@ app.post("/secretWord", (req, res) => {
   }
   res.redirect("/secretWord");
 });
+*/
 /*
 app.post("/secretWord", (req, res) => {
   req.session.secretWord = req.body.secretWord;
