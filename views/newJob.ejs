@@ -1,0 +1,17 @@
+<%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+<h2>Add new job</h2>
+<form method="POST" action="/jobs/newJob">
+  <label for="company">Company</label>
+  <input name="company" type="text" value="Ex.Lenovo" required />
+  <label for="position">Position</label>
+  <input name="position" type="text" value="Ex.Manager" required />
+  <label for="status">Status:</label>
+  <select name="status">
+    <option value="interview">Interview</option>
+    <option value="decline">Declined</option>
+    <option value="pending">Pending</option>
+  </select>
+  <button>Submit</button>
+  <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+</form>
+<%- include("partials/footer.ejs") %>

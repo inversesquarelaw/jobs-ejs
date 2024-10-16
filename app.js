@@ -1,24 +1,24 @@
 const express = require("express");
 require("express-async-errors");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
+
+require("dotenv").config(); //to access env variables
+
+//routes
+const secretWordRouter = require("./routes/secretWord");
+const jobRouter = require("./routes/jobs");
+
+const auth = require("./middleware/auth");
+
+//to manage user sessions
+const session = require("express-session");
 
 const app = express();
 
-app.set("view engine", "ejs");
+app.set("view engine", "ejs"); // tells express to use the ejs templating engine
 app.use(require("body-parser").urlencoded({ extended: true }));
-
-require("dotenv").config(); // to load the .env file into the process.env object
-const session = require("express-session");
-
-// uses local storage to store session cookies data, replace with storing cookie in database
-/*
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-*/
 
 // uses mongodb to store session cookies data
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -47,6 +47,7 @@ const sessionParms = {
   cookie: { secure: false, sameSite: "strict" },
 };
 
+// if env is "production" then set secure cookies
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
   sessionParms.cookie.secure = true; // serve secure cookies
@@ -54,6 +55,7 @@ if (app.get("env") === "production") {
 
 app.use(session(sessionParms));
 
+//passport
 const passport = require("passport");
 const passportInit = require("./passport/passportInit");
 
@@ -68,61 +70,44 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+//CSRF
+const csrf = require("host-csrf");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser(process.env.SESSION_SECRET));
+app.use(express.urlencoded({ extended: false }));
+let csrf_development_mode = true;
+if (app.get("env") === "production") {
+  csrf_development_mode = false;
+  app.set("trust proxy", 1);
+}
+
+app.set("trust proxy", 1);
+
+app.use(helmet());
+app.use(xss());
+
+const csrf_options = {
+  protected_operations: ["PATCH"],
+  protected_content_types: ["application/json"],
+  development_mode: csrf_development_mode,
+};
+
+app.use(csrf(csrf_options));
+app.use(require("./middleware/storeLocals"));
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
+app.use(require("./middleware/storeLocals"));
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
 app.use("/sessions", require("./routes/sessionRoutes"));
 
-// without using auth middleware, used to check that the secret word is working
-/*
-const secretWordRouter = require("./routes/secretWord");
-app.use("/secretWord", secretWordRouter);
-*/
+app.use("/secretWord", require("./routes/secretWord"));
 
-// turn on authentication middleware for this route
-const secretWordRouter = require("./routes/secretWord");
-const auth = require("./middleware/auth");
-app.use("/secretWord", auth, secretWordRouter);
-
-// secret word handling
-// let secretWord = "syzygy";
-/*
-app.get("/secretWord", (req, res) => {
-  if (!req.session.secretWord) {
-    req.session.secretWord = "syzygy";
-  }
-  res.locals.info = req.flash("info");
-  res.locals.errors = req.flash("error");
-  res.render("secretWord", { secretWord: req.session.secretWord });
-});
-app.post("/secretWord", (req, res) => {
-  if (req.body.secretWord.toUpperCase()[0] == "P") {
-    req.flash("error", "That word won't work!");
-    req.flash("error", "You can't use words that start with p.");
-  } else {
-    req.session.secretWord = req.body.secretWord;
-    req.flash("info", "The secret word was changed.");
-  }
-  res.redirect("/secretWord");
-});
-*/
-/*
-app.post("/secretWord", (req, res) => {
-  req.session.secretWord = req.body.secretWord;
-  res.redirect("/secretWord");
-});
-*/
-
-// secret word handling
-// old way
-/*
-let secretWord = "syzygy";
-app.get("/secretWord", (req, res) => {
-  res.render("secretWord", { secretWord });
-});
-app.post("/secretWord", (req, res) => {
-  secretWord = req.body.secretWord;
-  res.redirect("/secretWord");
-});
-
-*/
+app.use("/jobs", auth, jobRouter);
 
 app.use((req, res) => {
   res.status(404).send(`That page (${req.url}) was not found.`);

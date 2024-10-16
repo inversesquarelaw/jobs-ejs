@@ -20,7 +20,7 @@ const registerDo = async (req, res, next) => {
     } else {
       return next(e);
     }
-    return res.render("register", { errors: req.flash("errors") });
+    return res.render("register", { errors: flash("errors") });
   }
   res.redirect("/");
 };
@@ -40,18 +40,6 @@ const logonShow = (req, res) => {
   }
   res.render("logon");
 };
-// remove flash
-/*
-const logonShow = (req, res) => {
-  if (req.user) {
-    return res.redirect("/");
-  }
-  res.render("logon", {
-    errors: req.flash("error"),
-    info: req.flash("info"),
-  });
-};
-*/
 
 module.exports = {
   registerShow,

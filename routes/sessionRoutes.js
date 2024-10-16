@@ -18,10 +18,10 @@ router
       successRedirect: "/",
       failureRedirect: "/sessions/logon",
       failureFlash: true,
-    })
-    // (req, res) => {
-    //   res.send("Not yet implemented.");
-    // }
+    }),
+    (req, res) => {
+      res.send("Not yet implemented.");
+    }
   );
 router.route("/logoff").post(logoff);
 
