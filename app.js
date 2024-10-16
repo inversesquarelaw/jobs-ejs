@@ -17,22 +17,36 @@ const session = require("express-session");
 
 const app = express();
 
+// this section needs to go before routes
+app.use((req, res, next) => {
+  if (req.path == "/multiply") {
+    res.set("Content-Type", "application/json");
+  } else {
+    res.set("Content-Type", "text/html");
+  }
+  next();
+});
+
 app.set("view engine", "ejs"); // tells express to use the ejs templating engine
 app.use(require("body-parser").urlencoded({ extended: true }));
 
 // uses mongodb to store session cookies data
 const MongoDBStore = require("connect-mongodb-session")(session);
-const url = process.env.MONGO_URI;
+
+let mongoURL = process.env.MONGO_URI;
+if (process.env.NODE_ENV == "test") {
+  mongoURL = process.env.MONGO_URI_TEST;
+}
 
 // error check to make sure the MONGO_URI is defined
-if (!url) {
+if (!mongoURL) {
   console.error("MONGO_URI is not defined in the environment variables.");
   process.exit(1);
 }
 
 const store = new MongoDBStore({
   // may throw an error, which won't be caught
-  uri: url,
+  uri: mongoURL,
   collection: "mySessions",
 });
 store.on("error", function (error) {
@@ -109,6 +123,17 @@ app.use("/secretWord", require("./routes/secretWord"));
 
 app.use("/jobs", auth, jobRouter);
 
+// test multiple function
+app.get("/multiply", (req, res) => {
+  const result = req.query.first * req.query.second;
+  if (result.isNaN) {
+    result = "NaN";
+  } else if (result == null) {
+    result = "null";
+  }
+  res.json({ result: result });
+});
+
 app.use((req, res) => {
   res.status(404).send(`That page (${req.url}) was not found.`);
 });
@@ -119,11 +144,10 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-
-const start = async () => {
+const start = () => {
   try {
-    await require("./db/connect")(process.env.MONGO_URI);
-    app.listen(port, () =>
+    require("./db/connect")(mongoURL);
+    return app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );
   } catch (error) {
@@ -132,3 +156,5 @@ const start = async () => {
 };
 
 start();
+
+module.exports = { app };
